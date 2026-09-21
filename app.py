@@ -237,7 +237,7 @@ view_slot = st.empty()
 def _render(current):
     with view_slot.container():
         if small:
-            st.plotly_chart(build_network(net, a, current, show_dj, height=420), width="stretch", key="net_chart")
+            st.plotly_chart(build_network(net, a, current, show_dj, height=420), width="stretch", key=f"net_chart_{current}")
             rows = table_state(a, current)
             df = pd.DataFrame(rows)
             changed = df.pop("geändert")
@@ -254,9 +254,9 @@ def _render(current):
                 t2.markdown(f"- {g.names[v]}: {'∞' if not np.isfinite(old) else f'{old:g}'} → {new:g} (über {g.names[u]})")
         else:
             c1, c2 = st.columns([3, 2])
-            c1.plotly_chart(build_network(net, a, current, show_dj), width="stretch", key="net_chart")
+            c1.plotly_chart(build_network(net, a, current, show_dj), width="stretch", key=f"net_chart_{current}")
             c2.markdown(f"**Verbesserungen je {unit_word}**")
-            c2.plotly_chart(build_progress(a, current), width="stretch", key="progress_chart")
+            c2.plotly_chart(build_progress(a, current), width="stretch", key=f"progress_chart_{current}")
             _, _, ch = state_at(a, current)
             c2.caption(f"Nach {unit_word} {current} von {last_step}; {len(ch)} Verbesserungen in diesem Schritt. Grün eingezeichnet sind die negativen Kanten, gelb die in diesem Schritt gelockerten." if net.geometric else
                        f"Nach {unit_word} {current} von {last_step}; {len(ch)} Verbesserungen in diesem Schritt. Gefärbt sind die bisher erreichten Knoten nach ihrer Entfernung; das Zufallsnetz hat keine Karte, die Kanten sind nicht gezeichnet.")
