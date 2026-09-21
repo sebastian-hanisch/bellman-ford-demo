@@ -1,5 +1,7 @@
 # Bellman-Ford – negative Kanten erlaubt, Runde für Runde – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-bellman-ford-demo.streamlit.app/)**
+
 Fünftes Stück der **Kürzeste-Wege-Linie** der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations Research und Machine Learning", Fortsetzung der [Dijkstra-Demo](../dijkstra-demo):
 anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere Verfahren im Vergleich) zeigt diese Demo **ein** Verfahren – **Bellman-Ford** – an einem wachsenden Beispiel.
 Dijkstra legt jeden Knoten einmal endgültig fest und geht davon aus, dass eine Route nie billiger wird, wenn man Kanten anhängt. Mit einer **negativen Kante** (Rückvergütung, Umtausch mit Gewinn, Bergabfahrt mit Rückgewinnung) stimmt das nicht mehr.
