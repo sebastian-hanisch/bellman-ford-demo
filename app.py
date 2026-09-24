@@ -23,6 +23,7 @@ from bf_presets import (
     init_session_state_defaults,
     load_permalink_settings,
     randomize_seed,
+    seed_widget,
     sync_query_params,
 )
 from bf_scenario import make_network
@@ -131,14 +132,17 @@ with st.sidebar:
     )
     sized = net_key in C.SIZED_NETS
     if sized:
+        seed_widget("side_slider")
         side = st.slider("Kreuzungen je Seite", *bounds("side_slider"), key="side_slider", help="Größe des Rasters: Kreuzungen je Seite (das Netz hat das Quadrat davon).")
         st.session_state[KEPT["side_slider"]] = side
     else:
         side = int(st.session_state.get(KEPT["side_slider"], C.DEFAULT_SIDE))
     if net_key == "ev":
+        seed_widget("hill_slider")
         hill = st.slider("Hügel [m Höhenunterschied]", *bounds("hill_slider"), key="hill_slider",
                          help="Höhenunterschied zwischen Tal und Spitze. Anteil der Knoten, an denen Dijkstra falsche Kosten liefert (Mittel über fünf Netze, 16 × 16 Kreuzungen, 60 % Rückgewinnung) bei 0 / 10 / 20 / 30 / 40 m: 0 % / 0 % / 1.3 % / 12.8 % / 15.8 %.")
         st.session_state[KEPT["hill_slider"]] = hill
+        seed_widget("eta_slider")
         eta = st.slider("Rückgewinnung bergab [%]", *bounds("eta_slider"), key="eta_slider",
                         help="Wie viel Lageenergie der Wagen beim Bergabfahren zurückgewinnt. Anteil falscher Knoten bei Dijkstra (30 m Hügel) bei 0 / 20 / 40 / 60 / 80 / 90 %: 0 % / 0 % / 0.2 % / 12.8 % / 20.4 % / 24.2 %. "
                              "Unter 100 % entsteht nie ein negativer Zyklus.")
@@ -147,20 +151,25 @@ with st.sidebar:
         hill = int(st.session_state.get(KEPT["hill_slider"], C.DEFAULT_HILL))
         eta = int(st.session_state.get(KEPT["eta_slider"], C.DEFAULT_ETA))
     if net_key == "city":
+        seed_widget("reach_slider")
         reach = st.slider("Reichweite der Straßen [Blocklängen]", *bounds("reach_slider"), key="reach_slider", step=0.1, help="Wie weit eine Straße zwischen zwei Kreuzungen reichen darf (1 = nur Nachbarn im Raster).")
         st.session_state[KEPT["reach_slider"]] = reach
+        seed_widget("spread_slider")
         spread = st.slider("Streuung der Kosten", *bounds("spread_slider"), key="spread_slider", step=0.25, help="Kosten einer Straße = Länge × (1 + Streuung × Zufall), gerundet auf ganze Meter.")
         st.session_state[KEPT["spread_slider"]] = spread
     else:
         reach = float(st.session_state.get(KEPT["reach_slider"], C.DEFAULT_REACH))
         spread = float(st.session_state.get(KEPT["spread_slider"], C.DEFAULT_SPREAD))
     if net_key == "random":
+        seed_widget("nodes_slider")
         nodes = st.slider("Knoten", *bounds("nodes_slider"), key="nodes_slider", step=100,
                           help="Anzahl der Knoten. Kantenprüfungen von Bellman-Ford (früher Abbruch) im Verhältnis zu Dijkstra bei 100 / 400 / 1 000 Knoten (mittlerer Grad 3): 6.4-fach / 8.2-fach / 8.8-fach.")
         st.session_state[KEPT["nodes_slider"]] = nodes
+        seed_widget("degree_slider")
         degree = st.slider("Mittlerer Grad", *bounds("degree_slider"), key="degree_slider", step=0.5,
                            help="Kanten je Knoten (ausgehend). Verhältnis der Kantenprüfungen Bellman-Ford / Dijkstra bei Grad 2 / 4 / 6 (400 Knoten): 10.4-fach / 6.8-fach / 6.0-fach.")
         st.session_state[KEPT["degree_slider"]] = degree
+        seed_widget("pot_slider")
         pot = st.slider("Potenzialspanne", *bounds("pot_slider"), key="pot_slider",
                         help="Kosten = 1 bis 9 plus Potenzial(Start) − Potenzial(Ziel), Potenziale zufällig zwischen 0 und dieser Spanne. Je größer, desto mehr negative Kanten - nie ein negativer Zyklus. "
                              "Anteil negativer Kanten bei Spanne 2 / 8 / 20: 1.1 % / 11.1 % / 27.1 %; Anteil falscher Knoten bei Dijkstra 0.2 % / 6.3 % / 23.3 %.")
@@ -173,6 +182,7 @@ with st.sidebar:
                            help="Lehrbuch: immer n − 1 Runden, dann eine Prüfrunde. Früher Abbruch: hört nach der ersten Runde ohne Änderung auf. Gleichzeitig: jede Runde liest nur die Werte der vorigen Runde (Runde k = höchstens k Kanten). "
                                 "Warteschlange: prüft nur Kanten von Knoten, die sich gerade verbessert haben. Das Ergebnis ist bei allen gleich, nur der Aufwand nicht.")
     if variant in ("textbook", "early_stop"):
+        seed_widget("order_select")
         order = st.selectbox("Reihenfolge der Kanten", list(C.ORDER_LABELS), key="order_select", format_func=lambda k: C.ORDER_LABELS[k],
                              help="In welcher Reihenfolge eine Runde die Kanten prüft; Verbesserungen wirken sofort. Kanten \"wie im Netz\" laufen nach Startknoten - im Stadtnetz folgen die Knotennummern dem Raster, das ist eine günstige Reihenfolge. "
                                   "\"Nahe zuerst\" braucht die wahren Entfernungen und ist nur eine Grenze, keine Möglichkeit. Am Ergebnis ändert nichts etwas.")
@@ -180,6 +190,7 @@ with st.sidebar:
     else:
         order = st.session_state.get(KEPT["order_select"], C.DEFAULT_EDGE_ORDER)
     if net_key in ("ev", "random", "city"):
+        seed_widget("seed_input")
         seed = st.number_input("Zufalls-Seed", *bounds("seed_input"), key="seed_input", step=1)
         st.session_state[KEPT["seed_input"]] = seed
         st.button("🎲 Neues Netz generieren", width="stretch", on_click=randomize_seed, help="Würfelt einen neuen Zufalls-Seed für das Netz.")
