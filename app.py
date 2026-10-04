@@ -362,7 +362,7 @@ if st.session_state.get("effort_on"):
     c2.table({"Verfahren": ["Lehrbuch", "früher Abbruch (Netz)", "früher Abbruch (zufällig)", "Warteschlange", "Dijkstra"],
               f"Prüfungen bei {_num(big['n'])} Knoten": [_num(big["textbook"]), _num(big["early_stop"]), _num(big["early_random"]), _num(big["queue"]), _num(big["dijkstra"])]})
     st.caption(f"Stadtnetz ohne negative Kanten, Start unten links, Mittel über 5 feste Netze. Das **Lehrbuch** prüft immer n · m Kanten: bei {_num(big['n'])} Knoten {big['textbook'] / big['dijkstra']:.0f}-mal so viel wie Dijkstra. "
-               f"**Früher Abbruch** braucht nur so viele Runden, wie die kürzeste Route zum entferntesten Knoten Kanten hat, wenn die Reihenfolge ungünstig ist (hier {big['hop_depth']:.0f} Kanten); bei günstiger Reihenfolge {big['rounds_early']:.1f}, bei zufälliger {big['rounds_random']:.1f} Runden: "
+               f"**Früher Abbruch** braucht höchstens eine Runde mehr, als die kürzeste Route zum entferntesten Knoten Kanten hat (die letzte Runde bestätigt nur), wenn die Reihenfolge ungünstig ist (hier {big['hop_depth']:.0f} Kanten); bei günstiger Reihenfolge {big['rounds_early']:.1f}, bei zufälliger {big['rounds_random']:.1f} Runden: "
                f"{big['early_stop'] / big['dijkstra']:.1f}-fach bzw. {big['early_random'] / big['dijkstra']:.1f}-fach so viele Prüfungen wie Dijkstra. Die **Warteschlange** liegt bei {big['queue'] / big['dijkstra']:.2f}-fach.")
 
 st.markdown("---")
@@ -397,7 +397,7 @@ if st.session_state.get("wrong_on"):
     same_rounds = len({round(r["rounds"], 6) for r in prows}) == 1
     st.caption(f"Links: E-Lieferwagen im 16 × 16-Netz mit 30 m Hügeln, Start unten links, Mittel über 5 Netze; bei 60 % Rückgewinnung sind {r0['neg_share']:.1%} der Kanten negativ und Dijkstra hat an {r0['wrong_share']:.1%} der Knoten falsche Kosten "
                f"(in {r0['seeds_with_alarm']} von {r0['seeds']} Netzen schlägt er Alarm). Es gab in keinem Netz einen negativen Zyklus. Rechts: Zufallsnetz mit 400 Knoten, vier Startknoten je Netz; bei Spanne {r1['pot']} sind {r1['neg_share']:.1%} der Kanten negativ und Dijkstra liegt an {r1['wrong_share']:.1%} der Knoten falsch. "
-               + ("Die **Runden von Bellman-Ford bleiben bei jeder Spanne dieselben**: die Potenziale ändern nicht, welche Routen kürzeste sind, und heben sich in jedem Vergleich auf. Genau das nutzt **Johnson** (nächstes Stück): ein Mal Bellman-Ford rechnen, damit alle Kanten nichtnegativ machen, dann Dijkstra." if same_rounds else ""))
+               + ("Die **Runden von Bellman-Ford bleiben bei jeder Spanne dieselben**: die Potenziale ändern nicht, welche Routen kürzeste sind, und heben sich in jedem Vergleich auf. Genau das nutzt **Johnson** (siebtes Stück der Linie): ein Mal Bellman-Ford rechnen, damit alle Kanten nichtnegativ machen, dann Dijkstra." if same_rounds else ""))
 
 st.markdown("---")
 
@@ -429,7 +429,7 @@ st.markdown(
 | **Es gibt keine Nebenbedingungen** | Bellman-Ford kennt nur eine Kostenart; Zeit gegen Energie gleichzeitig ist ein anderes Problem. | **Mehrkriterien-Routing** |
 """
 )
-st.caption("Die Nachbarn der Kürzeste-Wege-Linie: Floyd-Warshall, Johnson und Mehrkriterien-Routing (noch nicht gebaut). Bereits gebaut: Breitensuche, Dijkstra, bidirektionale Suche und Contraction Hierarchies.")
+st.caption("Die Nachbarn der Kürzeste-Wege-Linie: Floyd-Warshall, Johnson und Mehrkriterien-Routing (inzwischen gebaut). Ebenfalls gebaut: Breitensuche, Dijkstra, bidirektionale Suche und Contraction Hierarchies.")
 
 st.markdown("---")
 
@@ -461,6 +461,6 @@ st.markdown("---")
 
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Kürzeste Wege: von der Breitensuche bis RAPTOR](https://sebastianhanisch.net/konzepte-kuerzeste-wege.html)."
 )
